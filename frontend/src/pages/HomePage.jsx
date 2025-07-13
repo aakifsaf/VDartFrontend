@@ -5,6 +5,7 @@ import { Target, TrendingUp, Cloud, ArrowRight, Menu, X, MapPin, MessageCircle }
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
     const images = [
@@ -91,14 +92,15 @@ export default function HomePage() {
 {/* Hero Section */}
 <section className="flex flex-col items-center px-4 py-24 relative overflow-hidden">
 <img
-    src="/design1-removebg-preview.png"
-    alt="Left Shape"
-    className="absolute top-12 left-0 w-[250px] md:w-[400px] h-[370px] z-0"
-  />
-  <img
+  src="/design1-removebg-preview.png"
+  alt="Left Shape"
+  className="absolute top-4 left-0 w-[50vw] max-w-[300px] md:max-w-[400px] h-auto z-0"
+/>
+
+<img
   src="/design2-removebg-preview.png"
   alt="Right Shape"
-  className="absolute bottom-0 right-0 w-[40vw] max-w-[400px] h-[365px] z-0"
+  className="absolute bottom-0 right-0 w-[50vw] max-w-[320px] md:max-w-[400px] h-auto z-0"
 />
 <img
   src={images[currentIndex]}
@@ -127,13 +129,18 @@ export default function HomePage() {
         >
             Enroll
         </button>
-        <button className="px-16 py-1 bg-green-200 rounded text-blue-900">Get Started</button>
+        <Link to="/login">
+            <button className="px-16 py-1 bg-green-200 rounded text-blue-900">
+                Get Started
+            </button>
+        </Link>
+
         </div>
   </div>
 </section>
 
 {/* Courses Offered */}
-<section className="relative px-4 pt-24 pb-8 bg-white z-0">
+<section className="relative px-4 pt-10 pb-8 bg-white z-0">
   {/* Heading */}
   <h3 className="text-center text-base font-bold text-blue-900 relative z-50 pb-6">
     Courses Offered
@@ -154,7 +161,7 @@ export default function HomePage() {
     </div>
 
     {/* Middle Box */}
-    <div className="bg-green-100 p-6 shadow text-center h-[180px]">
+    <div className="bg-green-100 p-6 shadow text-center">
       <div className="flex flex-col items-center gap-1 mb-2">
         <TrendingUp className="h-5 w-5 text-blue-800" />
         <h4 className="font-semibold text-sm text-blue-900">Data Analytics</h4>
