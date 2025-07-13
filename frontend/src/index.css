@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -66,3 +70,57 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes typewriter-loop {
+  0% {
+    width: 0;
+  }
+  99% {
+    width: 100%;
+  }
+}
+
+.typewriter {
+  overflow: hidden;
+  white-space: nowrap;
+  display: block;
+  width: 100%;
+  animation: typewriter-loop 6s steps(28, end) infinite;
+}
+
+.curved-left::before,
+.curved-right::before,
+.curved-left::after,
+.curved-right::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background-color: #d1fae5; /* Same as bg-green-100 */
+  z-index: 0;
+  border-radius: 50% / 100%;
+}
+
+.curved-left::before {
+  top: -20px;
+}
+
+.curved-left::after {
+  bottom: -20px;
+}
+
+.curved-right::before {
+  top: -20px;
+  right: 0;
+}
+
+.curved-right::after {
+  bottom: -20px;
+  right: 0;
+}
+
+
+
+
+
