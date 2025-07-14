@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../assets/vdartlogo.png';
+import logo from '/vdart-logo.png';
 import { FaFacebook, FaTwitter, FaGoogle } from "react-icons/fa"
 import { Lock, User, Mail, LockOpen } from "lucide-react"
 import { useNavigate } from "react-router-dom";

@@ -1,13 +1,65 @@
 import React from 'react';
-import logo from '../assets/vdartlogo.png';
+import logo from '/vdart-logo.png';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
-import { Target, TrendingUp, Cloud, ArrowRight, Menu, X, MapPin, MessageCircle } from "lucide-react";
+import { Target, TrendingUp, Cloud,Brain, Palette, Menu, X, MapPin, MessageCircle, Laptop } from "lucide-react";
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import emailjs from '@emailjs/browser';
+import { useRef } from 'react';
+const courses = [
+  {
+    icon: <Target className="h-5 w-5 text-blue-800" />,
+    title: "FullStack Development",
+    points: [
+      "Master front-end and back-end technologies to build dynamic web applications.",
+      "Learn through real-time projects using HTML, CSS, JavaScript, Node.js, and more.",
+    ],
+  },
+  {
+    icon: <TrendingUp className="h-5 w-5 text-blue-800" />,
+    title: "Data Analytics",
+    points: [
+      "Gain skills in data cleaning, visualization, and interpretation using Excel, SQL, and Python.",
+      "Transform raw data into actionable insights that drive smart decisions.",
+    ],
+  },
+  {
+    icon: <Cloud className="h-5 w-5 text-blue-800" />,
+    title: "Cloud Computing",
+    points: [
+      "Learn the fundamentals of cloud services with AWS, Azure, and Google Cloud.",
+      "Deploy, manage, and scale applications in real-world cloud environments.",
+    ],
+  },
+  {
+    icon: <Brain className="h-5 w-5 text-blue-800" />,
+    title: "AI & Machine Learning",
+    points: [
+      "Learn to build intelligent systems with Python, TensorFlow, and real projects.",
+      "Gain expertise in model training, deployment, and AI ethics.",
+    ],
+  },
+  {
+    icon: <Palette className="h-5 w-5 text-blue-800" />,
+    title: "UI/UX Design",
+    points: [
+      "Design user-centered digital experiences with Figma, Adobe XD, and usability principles.",
+      "From wireframes to prototypes, bring creativity and functionality together.",
+    ],
+  },
+  {
+    icon: <Laptop className="h-5 w-5 text-blue-800" />,
+    title: "Digital Marketing",
+    points: [
+      "Gain practical experience by working on live projects for real clients.",
+      "Learn SEO, SEM, social media, and email marketing from industry experts.",
+    ],
+  },
+];
 export default function HomePage() {
+    const scrollRef = useRef(null);
     const images = [
       "/young-businesswoman-smiling-camera-removebg-preview 1.png",
       "/young-businesswoman-smiling-camera-removebg-preview 1 (1).png",
@@ -65,32 +117,84 @@ export default function HomePage() {
 
   const { name, course, image, message } = alumniData[current];
   
+  const formRef = useRef();
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+  
+    emailjs
+      .sendForm(
+        'service_butihzf',
+        'template_2uwpp9r',
+        formRef.current,
+        '6xZOwPxfaeJaK6yTa'
+      )
+      .then(
+        (result) => {
+          alert("✅ Form submitted successfully!");
+          formRef.current.reset(); // clear form
+        },
+        (error) => {
+          alert("❌ Failed to send form. Please try again.");
+          console.error(error.text);
+        }
+      );
+
+      useEffect(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+    
+        // Duplicate content to simulate loop
+        const clone = el.innerHTML;
+        el.innerHTML += clone;
+    
+        let scrollAmount = 0;
+        const speed = 0.5;
+    
+        const scrollLoop = () => {
+          scrollAmount += speed;
+          if (scrollAmount >= el.scrollWidth / 2) {
+            scrollAmount = 0; // reset
+          }
+          el.scrollLeft = scrollAmount;
+          requestAnimationFrame(scrollLoop);
+        };
+    
+        scrollLoop();
+      }, []);
+  };
   return (
-    <div className="flex flex-col min-h-screen bg-green-100 font-sans text-[#002244]">
+    <div className="flex flex-col min-h-screen bg-green-100 font-sans text-[#002244] w-[100vw]">
       {/* Header */}
-      <header className="bg-[#D9F5E2] py-2 px-4 fixed w-full flex justify-between items-center shadow-sm z-50">
+      <header className="bg-[#D9F5E2] py-2 px-4 fixed w-full flex justify-between items-center shadow-sm z-50 h-16">
   {/* Logo */}
   <div className="flex items-center gap-2">
-    <img src={logo} alt="VDart Logo" className="h-12 w-auto scale-125" />
+    <img src={logo} alt="VDart Logo" className="absolute h-16 w-auto scale-125" />
   </div>
 
   {/* Nav Links and User Icon */}
-  <div className="flex items-center gap-24">
-    <nav className="flex gap-20 text-sm font-medium text-blue-900">
-      <a href="#" className="font-bold text-blue-900">Home</a>
-      <a href="#" className="text-blue-900">Courses</a>
-      <a href="#" className="text-blue-900">Gallery</a>
-      <a href="#" className="text-blue-900">Contact</a>
-      <a href="#" className="text-blue-900">About Us</a>
+  <div className="flex items-center gap-8">
+    <nav className="flex gap-10 text-sm font-medium text-blue-900">
+      <a href="#home" className="font-bold text-blue-900">Home</a>
+      <a href="#courses" className="text-blue-900">Courses</a>
+      <a href="#gallery" className="text-blue-900">Gallery</a>
+      <a href="#about" className="text-blue-900">About Us</a>
+      <a href="#contact" className="text-blue-900">Contact</a>
+
     </nav>
-    <div className="w-8 h-8 flex items-center justify-center border-blue-900 rounded-full">
+    {/* <div className="w-8 h-8 flex items-center justify-center border-blue-900 rounded-full">
       <UserCircleIcon className="w-8 h-8 text-[#002A5C]" />
-    </div>
+    </div> */}
+    <div className=" text-right pr-0">
+          <button className="bg-blue-900 text-white px-8 py-2 text-sm rounded shadow hover:bg-blue-800 transition">
+            Login
+          </button>
+        </div>
   </div>
 </header>
 
 {/* Hero Section */}
-<section className="flex flex-col items-center px-4 py-24 relative overflow-hidden">
+<section className="flex flex-col items-center px-4 py-24 relative overflow-hidden" id="home">
 <img
   src="/design1-removebg-preview.png"
   alt="Left Shape"
@@ -124,31 +228,32 @@ export default function HomePage() {
       Fuel your ambitions with industry-aligned courses, hands-on learning, and expert mentorship.
     </p>
     <div className="flex justify-center gap-12 pt-2" style={{ minHeight: '40px' }}>
-        <button
-            className="px-20 py-1 border bg-green-100 border-blue-500 text-blue-600 rounded transition-all duration-100 hover:border-blue-900 hover:text-blue-900 hover:scale-102 transform"
-        >
-            Enroll
-        </button>
-        <Link to="/login">
+    <a href="https://forms.gle/UJpTdevcRG2d61ur6" target="_blank" rel="noopener noreferrer">
+  <button
+    className="px-20 py-1 border bg-green-100 border-blue-500 text-blue-600 rounded transition-all duration-100 hover:border-blue-900 hover:text-blue-900 hover:scale-102 transform"
+  >
+    Enroll
+  </button>
+</a>
+        {/* <Link to="/login">
             <button className="px-16 py-1 bg-green-200 rounded text-blue-900">
                 Get Started
             </button>
-        </Link>
-
+        </Link> */}
+        <button className="px-16 py-1 bg-green-200 rounded text-blue-900">
+                Get Started
+        </button>
         </div>
   </div>
 </section>
 
 {/* Courses Offered */}
-<section className="relative px-4 pt-10 pb-8 bg-white z-0">
-  {/* Heading */}
+{/* <section className="relative px-4 pt-10 pb-8 bg-white z-0" id="courses">
   <h3 className="text-center text-base font-bold text-blue-900 relative z-50 pb-6">
     Courses Offered
   </h3>
 
-  {/* Course Boxes */}
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-50">
-    {/* First Box */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-50">
     <div className="bg-green-100 p-6 shadow text-center">
       <div className="flex flex-col items-center gap-1 mb-2">
         <Target className="h-5 w-5 text-blue-800" />
@@ -160,7 +265,6 @@ export default function HomePage() {
       </ul>
     </div>
 
-    {/* Middle Box */}
     <div className="bg-green-100 p-6 shadow text-center">
       <div className="flex flex-col items-center gap-1 mb-2">
         <TrendingUp className="h-5 w-5 text-blue-800" />
@@ -172,7 +276,6 @@ export default function HomePage() {
       </ul>
     </div>
 
-    {/* Third Box */}
     <div className="bg-green-100 p-6 shadow text-center">
       <div className="flex flex-col items-center gap-1 mb-2">
         <Cloud className="h-5 w-5 text-blue-800" />
@@ -183,9 +286,155 @@ export default function HomePage() {
         <li>Deploy, manage, and scale applications in real-world cloud environments.</li>
       </ul>
     </div>
+    <div className="bg-green-100 p-6 shadow text-center">
+      <div className="flex flex-col items-center gap-1 mb-2">
+        <Brain className="h-5 w-5 text-blue-800" />
+        <h4 className="font-semibold text-sm text-blue-900">AI & Machine Learning</h4>
+      </div>
+      <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+        <li>Learn the fundamentals of cloud services with AWS, Azure, and Google Cloud.</li>
+        <li>Deploy, manage, and scale applications in real-world cloud environments.</li>
+      </ul>
+    </div>
+    <div className="bg-green-100 p-6 shadow text-center">
+      <div className="flex flex-col items-center gap-1 mb-2">
+        <Palette className="h-5 w-5 text-blue-800" />
+        <h4 className="font-semibold text-sm text-blue-900">UI/UX Design</h4>
+      </div>
+      <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+        <li>Design user-centered digital experiences with Figma, Adobe XD, and usability principles.</li>
+        <li>From wireframes to prototypes, bring creativity and functionality together.</li>
+      </ul>
+    </div>
+    <div className="bg-green-100 p-6 shadow text-center">
+      <div className="flex flex-col items-center gap-1 mb-2">
+        <Laptop className="h-5 w-5 text-blue-800" />
+        <h4 className="font-semibold text-sm text-blue-900">Digital Marketing</h4>
+      </div>
+      <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+        <li>Gain practical experience by working on live projects for real clients, building a professional portfolio that showcases your skills and enhances employability.</li>
+        <li>Learn essential digital marketing strategies from industry experts, including SEO, SEM, and social media marketing, to become job-ready.</li>
+      </ul>
+    </div>
+  </div>
+</section> */}
+<section className="relative px-4 pt-10 pb-8 bg-white z-0" id="courses">
+  {/* Heading */}
+  <h3 className="text-center text-base font-bold text-blue-900 relative z-50 pb-6">
+    Courses Offered
+  </h3>
+  {/* Scrollable Card Container */}
+  <div className="overflow-x-auto w-[97vw] z-20">
+    <div
+      className="flex gap-6 snap-x snap-mandatory overflow-x-auto scroll-smooth px-2 pb-4"
+      style={{ scrollbarWidth: "none" }}
+    >
+      {/* Hide Scrollbar for Webkit */}
+      <style>{`
+        ::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+
+      {/* Card Template */}
+      
+      <div className="w-[400px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <Target className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">FullStack Development</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Master front-end and back-end technologies to build dynamic web applications.</li>
+          <li>Learn through real-time projects using HTML, CSS, JavaScript, Node.js, and more.</li>
+        </ul>
+      </div>
+
+      <div className="w-[400px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <TrendingUp className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">Data Analytics</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Gain skills in data cleaning, visualization, and interpretation using Excel, SQL, and Python.</li>
+          <li>Transform raw data into actionable insights that drive smart decisions.</li>
+        </ul>
+      </div>
+
+      <div className="w-[380px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <Cloud className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">Cloud Computing</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Learn the fundamentals of cloud services with AWS, Azure, and Google Cloud.</li>
+          <li>Deploy, manage, and scale applications in real-world cloud environments.</li>
+        </ul>
+      </div>
+
+      <div className="w-[400px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <Brain className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">AI & Machine Learning</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Learn to build intelligent systems with Python, TensorFlow, and real projects.</li>
+          <li>Gain expertise in model training, deployment, and AI ethics.</li>
+        </ul>
+      </div>
+
+      <div className="w-[400px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <Palette className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">UI/UX Design</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Design user-centered digital experiences with Figma, Adobe XD, and usability principles.</li>
+          <li>From wireframes to prototypes, bring creativity and functionality together.</li>
+        </ul>
+      </div>
+
+      <div className="w-[380px] h-[200px] snap-center bg-green-100 p-6 shadow text-center flex-shrink-0">
+        <div className="flex flex-col items-center gap-1 mb-2">
+          <Laptop className="h-5 w-5 text-blue-800" />
+          <h4 className="font-semibold text-sm text-blue-900">Digital Marketing</h4>
+        </div>
+        <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+          <li>Gain practical experience by working on live projects for real clients.</li>
+          <li>Learn SEO, SEM, social media, and email marketing from industry experts.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
-<section className="bg-gray-100 py-12 px-4 md:px-20">
+{/* <section className="relative px-4 pt-10 pb-8 bg-white z-0 overflow-hidden" id="courses">
+      <h3 className="text-center text-base font-bold text-blue-900 pb-6">
+        Courses Offered
+      </h3>
+
+      <div className="relative w-full overflow-hidden">
+        <div className="flex w-max animate-scroll gap-6">
+          {[...courses, ...courses].map((course, index) => (
+            <div
+              key={index}
+              className="w-[400px] h-[210px] bg-green-100 p-6 shadow text-center flex-shrink-0"
+            >
+              <div className="flex flex-col items-center gap-1 mb-2">
+                {course.icon}
+                <h4 className="font-semibold text-sm text-blue-900">{course.title}</h4>
+              </div>
+              <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-4">
+                {course.points.map((pt, i) => (
+                  <li key={i}>{pt}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section> */}
+
+
+<section className="bg-gray-100 py-12 px-4 md:px-20" id="about">
   <h2 className="text-center text-base font-bold text-blue-900 mb-10">Why Choose VDart Academy?</h2>
 
   <div className=" space-y-12">
@@ -315,46 +564,58 @@ export default function HomePage() {
       </div>
     </section>
 
-    <section className="bg-gray-100 py-10 px-4">
+    <section className="bg-gray-100 py-10 px-4" id="contact">
   <h2 className="text-center text-sm font-bold text-blue-900 mb-8">Contact Us</h2>
 
   <div className=" w-[700px] h-[460px] mx-auto bg-white p-10 rounded shadow-md flex items-center justify-center">
-    <form className="space-y-8 w-[500px]">
-      <input
-        type="text"
-        placeholder="Name"
-        className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="email"
-        placeholder="Email address"
-        className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="tel"
-        placeholder="Phone Number"
-        className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="text"
-        placeholder="Subject"
-        className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-      />
-      <input
-        type="text"
-        placeholder="Message"
-        className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-      />
+  <form
+        ref={formRef}
+        onSubmit={sendEmail}
+        className="space-y-8 w-[500px]"
+      >
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          required
+          className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          required
+          className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <input
+          type="tel"
+          name="phone"
+          placeholder="Phone Number"
+          className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <input
+          type="text"
+          name="subject"
+          placeholder="Subject"
+          className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
+        <input
+          type="text"
+          name="message"
+          placeholder="Message"
+          required
+          className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        />
 
-      <div className="flex justify-center">
-        <button
-          type="submit"
-          className="bg-blue-900 text-white px-8 py-2 text-sm hover:bg-blue-800 transition-all"
-        >
-          Submit
-        </button>
-      </div>
-    </form>
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="bg-blue-900 text-white px-8 py-2 text-sm hover:bg-blue-800 transition-all"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
   </div>
 </section>
 <footer className="bg-blue-900 text-white px-6 py-10">
@@ -363,21 +624,13 @@ export default function HomePage() {
     <div className="space-y-4 pl-10">
       <h3 className="text-sm font-semibold uppercase tracking-wide">Contact Us</h3>
       <p className="text-sm font-bold">VDart Academy</p>
-      <a href="mailto:csm@vdartinc.com" className="text-sm text-blue-100 underline hover:text-white">
-        csm@vdartinc.com
+      <a href="mailto:info@vdartacademy.com" className="text-sm text-blue-100 underline hover:text-white">
+        info@vdartacademy.com
       </a>
       <p className="text-sm flex items-start gap-2 text-blue-100">
       <MapPin className="h-5 w-5 text-blue-100 mt-1" />
         Vdart, 30, Chennai - Theni Hwy, Mannarpuram, Sangillyandapuram, Tiruchirappalli, Tamil Nadu 620020
       </p>
-    </div>
-
-    {/* Message Box */}
-    <div className="flex justify-end p-10">
-      <div className="bg-white text-blue-900 px-6 py-3 rounded shadow w-full max-w-md flex items-center gap-2">
-      <MessageCircle className="w-5 h-5 text-blue-900" />
-        <span className="text-sm font-medium">Send Us A Message</span>
-      </div>
     </div>
   </div>
 
@@ -385,11 +638,11 @@ export default function HomePage() {
   <div className="border-t border-blue-900 mt-8 pt-4 flex flex-col md:flex-row justify-between items-center text-xs text-blue-100 gap-4">
     {/* Left Text */}
     <p className="text-center md:text-left pl-10">
-      © VDart 2025. All Rights Reserved. <span className="underline cursor-pointer">Disclaimer</span> | <span className="underline cursor-pointer">Privacy Policy</span>
+      © VDart Academy 2025. All Rights Reserved. <span className="underline cursor-pointer">Disclaimer</span> | <span className="underline cursor-pointer">Privacy Policy</span>
     </p>
 
     {/* Social Icons */}
-    <div className="flex justify-start gap-6">
+    <div className="flex justify-start gap-14 pr-4">
       <div className="flex items-center gap-1">
         <FaFacebook className="w-4 h-4" />
         <span>VDart Academy</span>
