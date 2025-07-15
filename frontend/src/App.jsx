@@ -6,7 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100 overflow-x-hidden">
+      <div className="min-h-screen bg-gray-100 w-[100vw]">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />

@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import emailjs from '@emailjs/browser';
 import { useRef } from 'react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 const courses = [
   {
     icon: <Target className="h-5 w-5 text-blue-800" />,
@@ -60,6 +61,15 @@ const courses = [
 ];
 export default function HomePage() {
     const scrollRef = useRef(null);
+    const sliderRef = useRef(null);
+
+  const scrollLeft = () => {
+    sliderRef.current.scrollBy({ left: -400, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    sliderRef.current.scrollBy({ left: 400, behavior: "smooth" });
+  };
     const images = [
       "/young-businesswoman-smiling-camera-removebg-preview 1.png",
       "/young-businesswoman-smiling-camera-removebg-preview 1 (1).png",
@@ -124,10 +134,10 @@ export default function HomePage() {
   
     emailjs
       .sendForm(
-        'service_butihzf',
-        'template_2uwpp9r',
+        'service_ouzs018',
+        'template_tf5scg9',
         formRef.current,
-        '6xZOwPxfaeJaK6yTa'
+        'VV70-VP44EmtKcUy2'
       )
       .then(
         (result) => {
@@ -325,10 +335,24 @@ export default function HomePage() {
   </h3>
   {/* Scrollable Card Container */}
   <div className="overflow-x-auto w-[97vw] z-20">
-    <div
-      className="flex gap-6 snap-x snap-mandatory overflow-x-auto scroll-smooth px-2 pb-4"
-      style={{ scrollbarWidth: "none" }}
-    >
+     <div className="absolute top-[50%] left-2 z-50">
+        <button onClick={scrollLeft} className="bg-blue-900 shadow p-1 rounded-full">
+          <ChevronLeft className="text-green-100" />
+        </button>
+      </div>
+      <div className="absolute top-[50%] right-2 z-50">
+        <button onClick={scrollRight} className="bg-blue-900 shadow p-1 rounded-full">
+          <ChevronRight className="text-green-100" />
+        </button>
+      </div>
+
+      {/* Scroll Container */}
+      <div className="overflow-x-auto w-[97vw] z-20">
+        <div
+          ref={sliderRef}
+          className="flex gap-6 snap-x snap-mandatory overflow-x-auto scroll-smooth px-2 pb-4"
+          style={{ scrollbarWidth: "none" }}
+        >
       {/* Hide Scrollbar for Webkit */}
       <style>{`
         ::-webkit-scrollbar {
@@ -405,6 +429,7 @@ export default function HomePage() {
       </div>
     </div>
   </div>
+    </div>
 </section>
 {/* <section className="relative px-4 pt-10 pb-8 bg-white z-0 overflow-hidden" id="courses">
       <h3 className="text-center text-base font-bold text-blue-900 pb-6">
