@@ -218,6 +218,41 @@ export default function HomePage() {
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, roleIndex]);
 
+    useEffect(() => {
+    const el = scrollRef.current;
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      if (el) el.scrollLeft = scrollTop;
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollContainerRef = useRef(null);
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    const wrapper = wrapperRef.current;
+
+    const handleScroll = () => {
+      const containerTop = container.offsetTop;
+      const containerHeight = container.offsetHeight;
+      const scrollY = window.scrollY;
+
+      // If in view, scroll horizontally
+      if (scrollY >= containerTop && scrollY < containerTop + containerHeight) {
+        const horizontalScroll = scrollY - containerTop;
+        wrapper.scrollLeft = horizontalScroll;
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+    const [navOpen, setNavOpen] = useState(false);
+
   return (
     <div className="flex flex-col min-h-screen bg-green-100 font-sans text-[#002244] w-full">
       {/* Header */}
@@ -228,6 +263,7 @@ export default function HomePage() {
         </div>
         {/* Nav Links and User Icon */}
         <div className="flex items-center gap-2 md:gap-8">
+          {/* Desktop Nav */}
           <nav className="hidden md:flex gap-4 md:gap-10 text-sm font-medium text-blue-900">
             <a href="#home" className="font-bold text-blue-900">Home</a>
             <a href="#courses" className="text-blue-900">Courses</a>
@@ -235,11 +271,40 @@ export default function HomePage() {
             <a href="#about" className="text-blue-900">About Us</a>
             <a href="#contact" className="text-blue-900">Contact</a>
           </nav>
+          {/* Hamburger Icon */}
+          <button
+            className="md:hidden p-2 rounded focus:outline-none"
+            onClick={() => setNavOpen(!navOpen)}
+            aria-label="Open navigation"
+          >
+            {navOpen ? <X className="w-6 h-6 text-blue-900" /> : <Menu className="w-6 h-6 text-blue-900" />}
+          </button>
           <button className="bg-blue-900 text-white px-4 md:px-8 py-2 text-sm rounded shadow hover:bg-blue-800 transition">
             Login
           </button>
         </div>
+        {/* Mobile Nav Drawer */}
+        {navOpen && (
+          <nav className="fixed top-16 left-0 w-full bg-[#D9F5E2] shadow-lg z-50 flex flex-col items-center py-6 gap-6 md:hidden animate-slideDown">
+            <a href="#home" className="font-bold text-blue-900" onClick={() => setNavOpen(false)}>Home</a>
+            <a href="#courses" className="text-blue-900" onClick={() => setNavOpen(false)}>Courses</a>
+            <a href="#gallery" className="text-blue-900" onClick={() => setNavOpen(false)}>Gallery</a>
+            <a href="#about" className="text-blue-900" onClick={() => setNavOpen(false)}>About Us</a>
+            <a href="#contact" className="text-blue-900" onClick={() => setNavOpen(false)}>Contact</a>
+          </nav>
+        )}
       </header>
+      <style>
+        {`
+          @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px);}
+            to { opacity: 1; transform: translateY(0);}
+          }
+          .animate-slideDown {
+            animation: slideDown 0.2s ease;
+          }
+        `}
+      </style>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-[200px] md:min-h-[300px] lg:min-h-[400px] px-4 md:px-8 pt-24 pb-16" id="home">
@@ -269,14 +334,15 @@ export default function HomePage() {
 
               {/* Typing Text */}
               <div className="mb-8">
-                <p className="text-lg md:text-xl lg:text-2xl font-mono leading-relaxed flex items-start gap-4">
-                  <span className="font-bold text-blue-900">Internships available in</span>
-                  <span className="relative inline-block">
-                    <span className="text-sky-700">{text}</span>
-                    <span className="animate-pulse text-sky-700">|</span>
-                  </span>
-                </p>
-              </div>
+  <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-mono leading-relaxed flex flex-wrap md:flex-column items-start gap-2 sm:gap-4">
+    <span className="font-bold text-blue-900 ">Internships available in</span>
+    <span className="relative inline-block">
+      <span className="text-sky-700">{text}</span>
+      <span className="animate-pulse text-sky-700">|</span>
+    </span>
+  </p>
+</div>
+
 
               {/* Description */}
               <div className="mb-12">
@@ -288,13 +354,14 @@ export default function HomePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <button className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 bg-blue-900 rounded-lg hover:bg-blue-800 transition-all duration-200 hover:text-white">
-                  <a href="https://forms.gle/UJpTdevcRG2d61ur6" target="_blank" rel="noopener noreferrer" className="text-white">
+              <div className="flex flex-col items-center md:items-start md:flex-row  gap-3 md:gap-6">
+                <a href="https://forms.gle/UJpTdevcRG2d61ur6" target="_blank" rel="noopener noreferrer">
+                <button className="w-[40vw] md:w-auto px-6 md:px-8 py-3 md:py-4 text-white bg-blue-900 rounded-lg hover:bg-blue-800 transition-all duration-200">
+                  
                     Enroll
-                  </a>
                 </button>
-                <button className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 bg-green-200 text-blue-900 rounded-lg hover:bg-green-300 transition-all duration-200">
+                 </a>
+                <button className="w-[30vw] md:w-auto px-2 md:px-8 py-3 md:py-4 bg-green-200 text-blue-900 rounded-lg hover:bg-green-300 transition-all duration-200">
                   Get Started
                 </button>
               </div>
@@ -307,65 +374,78 @@ export default function HomePage() {
                 src={images[currentIndex]}
                 alt="Changing"
                 className={`absolute bottom-0 right-0 transition-all duration-500  md:h-[460px] ${
-                  currentIndex === 2 ? 'max-w-[460px] md:max-w-[460px] right-0' : 'max-w-[320px] md:max-w-[320px] right-4 md:right-10'
+                  currentIndex === 2 ? 'max-w-[480px] md:max-w-[480px] right-0' : 'max-w-[330px] md:max-w-[330px] right-4 md:right-10'
                 }`}
               />
         </div>
       </section>
 
       {/* Courses Offered */}
-      <section className="relative px-2 md:px-4 pt-10 pb-8 bg-white z-0" id="courses">
-        <h3 className="text-center text-base font-bold text-blue-900 relative z-50 pb-6">
-          Courses Offered
-        </h3>
-        <div className="overflow-x-auto w-full z-20">
-          <div className="absolute top-[50%] left-2 z-50">
-            <button onClick={scrollLeft} className="bg-blue-900 shadow p-1 rounded-full">
-              <ChevronLeft className="text-green-100" />
-            </button>
-          </div>
-          <div className="absolute top-[50%] right-2 z-50">
-            <button onClick={scrollRight} className="bg-blue-900 shadow p-1 rounded-full">
-              <ChevronRight className="text-green-100" />
-            </button>
-          </div>
-          <div className="overflow-x-auto w-full z-20">
-            <div
-              ref={sliderRef}
-              className="flex gap-4 md:gap-6 snap-x snap-mandatory overflow-x-auto scroll-smooth px-2 pb-4"
-              style={{ scrollbarWidth: "none" }}
-            >
-              {/* Hide Scrollbar for Webkit */}
-              <style>{`
-                ::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-              {/* Card Template */}
-              {courses.map((course, idx) => (
-                <div
-                  key={idx}
-                  className="w-[280px] md:w-[380px] lg:w-[400px] h-[200px] snap-center bg-green-100 p-4 md:p-6 shadow text-center flex-shrink-0"
-                >
-                  <div className="flex flex-col items-center gap-1 mb-2">
-                    {course.icon}
-                    <h4 className="font-semibold text-sm text-blue-900">{course.title}</h4>
-                  </div>
-                  <ul className="text-xs list-disc list-inside text-gray-700 text-left mt-3 px-2 md:px-4">
-                    {course.points.map((pt, i) => (
-                      <li key={i}>{pt}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+<section className="relative px-2 md:px-4 pt-10 pb-8 bg-white z-0" id="courses">
+  <h3 className="text-center text-base font-bold text-blue-900 relative z-50 pb-8">
+    Courses Offered
+  </h3>
+  <div className="overflow-x-hidden w-full z-20">
+    <div className="absolute top-[50%] left-2 z-50">
+      <button onClick={scrollLeft} className="bg-blue-900 shadow p-1 rounded-full">
+        <ChevronLeft className="text-green-100" />
+      </button>
+    </div>
+    <div className="absolute top-[50%] right-2 z-50">
+      <button onClick={scrollRight} className="bg-blue-900 shadow p-1 rounded-full">
+        <ChevronRight className="text-green-100" />
+      </button>
+    </div>
+    <div className="overflow-x-hidden w-full z-20">
+      <div
+        ref={sliderRef}
+        className="flex gap-4 md:gap-6 snap-x snap-mandatory px-2 pb-4 animate-courses-roll"
+        style={{
+          scrollbarWidth: "none",
+          animation: "coursesRoll 10s linear infinite",
+        }}
+        onMouseEnter={e => e.currentTarget.style.animationPlayState = "paused"}
+        onMouseLeave={e => e.currentTarget.style.animationPlayState = "running"}
+      >
+        <style>{`
+          ::-webkit-scrollbar {
+            display: none;
+          }
+          @keyframes coursesRoll {
+          0% { transform: translateX(0); }
+          80% { transform: translateX(-105%); }
+          90% { transform: translateX(-105%); }
+          95% { transform: translateX(0); }
+        }
+        `}</style>
+        {[...courses, ...courses].map((course, idx) => (
+          <div
+            key={idx}
+            className="w-[280px] md:w-[380px] lg:w-[400px] h-[200px] snap-center bg-green-100 p-4 md:p-6 shadow text-center flex-shrink-0 rounded-xl transition-transform duration-300 hover:scale-105"
+            style={{
+              boxShadow: "0 4px 24px rgba(34,197,94,0.07)",
+              border: "1px solid #d1fae5",
+            }}
+          >
+            <div className="flex flex-col items-center gap-1 mb-2">
+              {course.icon}
+              <h4 className="font-semibold text-base md:text-lg text-blue-900">{course.title}</h4>
             </div>
+            <ul className="text-xs md:text-sm list-disc list-inside text-gray-700 text-left mt-3 px-2 md:px-4">
+              {course.points.map((pt, i) => (
+                <li key={i}>{pt}</li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* About Section */}
-      <section className="bg-white " id="about">
-        <div className="gap-6 bg-gray-100 py-12 px-4 md:px-20 rounded-lg shadow w-[95vw] md:w-[100vw]">
+      <section className="bg-white px-2" id="about">
+        <div className=" gap-6 bg-gray-100 py-4 md:py-12 px-4 md:px-20 rounded-lg shadow w-[97vw] md:w-[100vw]">
         <h2 className="text-center text-base font-bold text-blue-900 mb-10">Why Choose VDart Academy?</h2>
         <div className="space-y-12">
           {/* Feature Blocks */}
@@ -428,10 +508,10 @@ export default function HomePage() {
         </div>
         </div>
       </section>
-
+    
       {/* Alumni Section */}
-      <section className="bg-[#fdfdfb] py-10 px-2 md:px-4">
-        <h3 className="text-center text-sm font-bold text-blue-900 mb-6">
+      <section className="bg-[#fdfdfb] py-8 px-2 md:px-4">
+        <h3 className="text-center text-sm font-bold text-blue-900 mb-8">
           Hear From Our Alumni
         </h3>
         <div className="max-w-5xl h-auto md:h-[180px] mx-auto bg-gray-100 rounded shadow-md flex flex-col md:flex-row items-center overflow-hidden">
@@ -461,58 +541,79 @@ export default function HomePage() {
       </section>
 
       {/* Contact Section */}
-      <section className="bg-gray-100 py-10 px-2 md:px-4" id="contact">
-        <h2 className="text-center text-sm font-bold text-blue-900 mb-8">Contact Us</h2>
-        <div className="w-full max-w-xl md:w-[700px] md:h-[460px] mx-auto bg-white p-4 md:p-10 rounded shadow-md flex items-center justify-center">
-          <form
-            ref={formRef}
-            onSubmit={sendEmail}
-            className="space-y-6 md:space-y-8 w-full md:w-[500px]"
-          >
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              required
-              className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email address"
-              required
-              className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <input
-              type="tel"
-              name="phone"
-              placeholder="Phone Number"
-              className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <input
-              type="text"
-              name="subject"
-              placeholder="Subject"
-              className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <input
-              type="text"
-              name="message"
-              placeholder="Message"
-              required
-              className="w-full px-4 py-2 border border-blue-900 bg-green-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="bg-blue-900 text-white px-8 py-2 text-sm hover:bg-blue-800 transition-all"
-              >
-                Submit
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
+      <section className="bg-gray-100 py-10 px-4" id="contact">
+  <h2 className="text-center text-xl font-bold text-blue-900 mb-10">Contact Us</h2>
+  <div className="max-w-6xl mx-auto bg-white rounded shadow-md overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    {/* Map Section */}
+    <div className="h-80 md:h-auto hidden md:block">
+  <iframe
+    title="Location Map"
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15677.361437052865!2d78.67921652814984!3d10.785222629822906!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baaf55b333f9c25%3A0xfc2cfc83ced05e74!2sVDart!5e0!3m2!1sen!2sin!4v1752641096910!5m2!1sen!2sin"  // Replace with your location embed URL
+    width="100%"
+    height="100%"
+    allowFullScreen=""
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+    className="w-full h-full border-0"
+  ></iframe>
+</div>
+    {/* Form Section */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-blue-100 to-blue-200 p-6 md:p-10">
+  <form
+    ref={formRef}
+    onSubmit={sendEmail}
+    className="w-full max-w-md backdrop-blur-md bg-white/70 border border-white/40 rounded-xl shadow-2xl p-8 space-y-6"
+  >
+    <h2 className="text-2xl font-semibold text-blue-900 text-center">Contact Us</h2>
+
+    <input
+      type="text"
+      name="name"
+      placeholder="Your Name"
+      required
+      className="w-full px-4 py-3 border border-transparent rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm shadow-sm transition-all"
+    />
+    <input
+      type="email"
+      name="email"
+      placeholder="Email Address"
+      required
+      className="w-full px-4 py-3 border border-transparent rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm shadow-sm transition-all"
+    />
+    <input
+      type="tel"
+      name="phone"
+      placeholder="Phone Number"
+      className="w-full px-4 py-3 border border-transparent rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm shadow-sm transition-all"
+    />
+    <input
+      type="text"
+      name="subject"
+      placeholder="Subject"
+      className="w-full px-4 py-3 border border-transparent rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm shadow-sm transition-all"
+    />
+    <textarea
+      name="message"
+      placeholder="Message"
+      rows="4"
+      required
+      className="w-full px-4 py-3 border border-transparent rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-sm shadow-sm resize-none transition-all"
+    />
+
+    <div className="flex justify-center">
+      <button
+        type="submit"
+        className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+      >
+        Send Message
+      </button>
+    </div>
+  </form>
+</div>
+
+  </div>
+</section>
+
 
       {/* Footer */}
       <footer className="bg-blue-900 text-white px-4 md:px-6 py-10">
@@ -524,7 +625,6 @@ export default function HomePage() {
               info@vdartacademy.com
             </a>
             <p className="text-sm flex items-center md:items-start gap-2 md:gap-3 text-blue-100">
-              <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-100 flex-shrink-0" />
               <span className="flex-grow">
                 Vdart, 30, Chennai - Theni Hwy, Mannarpuram, Sangillyandapuram, Tiruchirappalli, Tamil Nadu 620020
               </span>
