@@ -59,21 +59,21 @@ const courses = [
     ],
   },
 ];
-  const changingTexts = [
-  "Full Stack Development.",
-  "Data Analytics.",
-  "Cloud Computing.",
-  "AI & Machine Learning.",
-  "UI/UX Design.",
-  "Digital Marketing.",
+const roles = [
+  "Full Stack Development",
+  "Data Analytics",
+  "Cloud Computing",
+  "UI/UX Design",
+  "AI & Machine Learning",
+  "Cybersecurity",
 ];
 export default function HomePage() {
     const scrollRef = useRef(null);
     const sliderRef = useRef(null);
-  const [displayText, setDisplayText] = useState("");
-  const [textIdx, setTextIdx] = useState(0);
-  const [charIdx, setCharIdx] = useState(0);
-  const [isDeleting, setIsDeleting] = useState(false);
+    const [text, setText] = useState("");
+    const [roleIndex, setRoleIndex] = useState(0);
+    const [charIndex, setCharIndex] = useState(0);
+    const [isDeleting, setIsDeleting] = useState(false);
 
   const scrollLeft = () => {
     sliderRef.current.scrollBy({ left: -400, behavior: "smooth" });
@@ -188,38 +188,35 @@ export default function HomePage() {
 
   
   useEffect(() => {
-    let typingSpeed = isDeleting ? 40 : 80;
-    let pauseTime = 1200;
-
-    if (!isDeleting && charIdx === changingTexts[textIdx].length) {
-      // Pause before deleting
-      typingSpeed = pauseTime;
-    } else if (isDeleting && charIdx === 0) {
-      // Pause before typing next
-      typingSpeed = 400;
-    }
+    const currentRole = roles[roleIndex];
+    const typingSpeed = isDeleting ? 50 : 100;
+    const pauseDuration = 2000; // Increased pause duration
 
     const timeout = setTimeout(() => {
       if (!isDeleting) {
-        if (charIdx < changingTexts[textIdx].length) {
-          setDisplayText(changingTexts[textIdx].slice(0, charIdx + 1));
-          setCharIdx(charIdx + 1);
+        // Typing
+        if (charIndex < currentRole.length) {
+          setText(currentRole.substring(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
         } else {
-          setIsDeleting(true);
+          // Pause before deleting
+          setTimeout(() => setIsDeleting(true), pauseDuration);
         }
       } else {
-        if (charIdx > 0) {
-          setDisplayText(changingTexts[textIdx].slice(0, charIdx - 1));
-          setCharIdx(charIdx - 1);
+        // Deleting
+        if (charIndex > 0) {
+          setText(currentRole.substring(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
         } else {
+          // Move to next role
           setIsDeleting(false);
-          setTextIdx((prev) => (prev + 1) % changingTexts.length);
+          setRoleIndex((prev) => (prev + 1) % roles.length);
         }
       }
     }, typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [charIdx, isDeleting, textIdx]);
+  }, [charIndex, isDeleting, roleIndex]);
 
   return (
     <div className="flex flex-col min-h-screen bg-green-100 font-sans text-[#002244] w-full">
@@ -245,114 +242,74 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="flex flex-col items-center px-2 md:px-4 py-24 relative overflow-hidden" id="home">
-        {/* <img
+      <section className="relative overflow-hidden min-h-[200px] md:min-h-[300px] lg:min-h-[400px] px-4 md:px-8 pt-24 pb-16" id="home">
+        {/* Decorative Images */}
+        <img
           src="/design1-removebg-preview.png"
           alt="Left Shape"
-          className="absolute top-0 left-0 w-[600px] max-w-[700px] md:max-w-[450px] h-auto z-0"
+          className="absolute top-0 left-0 hidden md:block w-[530px] h-[600px] opacity-50 "
         />
         <img
           src="/design2-removebg-preview.png"
           alt="Right Shape"
-          className="absolute bottom-0 right-0 w-[500px] max-w-[600px] md:max-w-[420px] h-auto z-0"
-        /> */}
-        <img
-          src={images[currentIndex]}
-          alt="Changing"
-          className={`absolute bottom-0 transition-all duration-500 h-[160px] md:h-[300px] ${
-            currentIndex === 2 ? 'w-1/2 max-w-[180px] md:max-w-[350px] right-0' : 'w-2/5 max-w-[120px] md:max-w-[240px] right-4 md:right-10'
-          }`}
+          className="absolute bottom-0 right-0 hidden md:block w-[500px] h-[540px] opacity-50"
         />
-        <div className="space-y-4 w-full max-w-xl">
-          <div className="w-full md:w-[29ch] mx-auto">
-            <h2 className="text-lg md:text-1xl font-semibold uppercase pt-4 text-center w-full md:w-[29ch] mx-auto">
-              Welcome to Vdart Academy!!
-            </h2>
+        
+        {/* Content Container */}
+        <div className="container mx-auto px-4 relative z-10 flex items-center">
+          <div className="flex flex-col md:flex-row gap-8 md:gap-12">
+            {/* Left Content */}
+            <div className="md:w-[87%] w-full">
+              {/* Title */}
+              <div className="mb-8">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-900 uppercase tracking-tight">
+                  Welcome to Vdart Academy!!
+                </h1>
+              </div>
+
+              {/* Typing Text */}
+              <div className="mb-8">
+                <p className="text-lg md:text-xl lg:text-2xl font-mono leading-relaxed flex items-start gap-4">
+                  <span className="font-bold text-blue-900">Internships available in</span>
+                  <span className="relative inline-block">
+                    <span className="text-sky-700">{text}</span>
+                    <span className="animate-pulse text-sky-700">|</span>
+                  </span>
+                </p>
+              </div>
+
+              {/* Description */}
+              <div className="mb-12">
+                <p className="text-base md:text-lg text-gray-700 leading-relaxed">
+                  Step into VDart Academy. Power up your curiosity. <br />
+                  Learn limitlessly with tools, insights, and support designed just for you. <br />
+                  Fuel your ambitions with industry-aligned courses, hands-on learning, and expert mentorship.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <button className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 bg-blue-900 rounded-lg hover:bg-blue-800 transition-all duration-200 hover:text-white">
+                  <a href="https://forms.gle/UJpTdevcRG2d61ur6" target="_blank" rel="noopener noreferrer" className="text-white">
+                    Enroll
+                  </a>
+                </button>
+                <button className="w-full md:w-auto px-6 md:px-8 py-3 md:py-4 bg-green-200 text-blue-900 rounded-lg hover:bg-green-300 transition-all duration-200">
+                  Get Started
+                </button>
+              </div>
+            </div>
+            
           </div>
-<p className="text-center text-xs md:text-sm leading-relaxed pt-5 pr-2 flex justify-center gap-2 md:gap-4 items-center">
-  <span
-    className="whitespace-nowrap font-bold text-gradient"
-    style={{
-      fontSize: "1.1em",
-      letterSpacing: "0.02em",
-      background: "linear-gradient(90deg, #0ea5e9 0%, #22d3ee 100%)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      backgroundClip: "text",
-    }}
-  >
-    Internships available in
-  </span>
-  <span
-    className="font-semibold text-blue-900 shadow-lg px-2 py-1 rounded-lg bg-gradient-to-r from-green-100 via-blue-100 to-green-100 border border-blue-200 transition-all duration-300"
-    style={{
-      minWidth: "15ch",
-      display: "inline-block",
-      textAlign: "left",
-      whiteSpace: "nowrap",
-      fontFamily: "monospace",
-      fontSize: "1.1em",
-      position: "relative",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-    }}
-  >
-    <span
-      style={{
-        display: "inline-block",
-        transition: "color 0.3s",
-        color: "#0ea5e9",
-        textShadow: "0 1px 8px #38bdf8",
-      }}
-    >
-      {displayText}
-    </span>
-    <span
-      className="animate-blink"
-      style={{
-        fontWeight: "bold",
-        color: "#0ea5e9",
-        marginLeft: "2px",
-        fontSize: "1.1em",
-        position: "absolute",
-        right: "-1ch",
-        top: 0,
-      }}
-    >
-      |
-    </span>
-  </span>
-</p>
-<style>
-  {`
-    .animate-blink {
-      animation: blink 1s steps(2, start) infinite;
-    }
-    @keyframes blink {
-      to { visibility: hidden; }
-    }
-    .text-gradient {
-      background: linear-gradient(90deg, #0ea5e9 0%, #22d3ee 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-  `}
-</style>
-          <p className="text-center text-xs md:text-sm leading-relaxed p-2 md:p-6">
-            Step into VDart Academy. Power up your curiosity. <br />
-            Learn limitlessly with tools, insights, and support designed just for you. <br />
-            Fuel your ambitions with industry-aligned courses, hands-on learning, and expert mentorship.
-          </p>
-          <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-12 pt-2 w-full">
-            <a href="https://forms.gle/UJpTdevcRG2d61ur6" target="_blank" rel="noopener noreferrer">
-              <button className="px-8 md:px-20 py-1 border bg-green-100 border-blue-500 text-blue-600 rounded transition-all duration-100 hover:border-blue-900 hover:text-blue-900 hover:scale-102 transform">
-                Enroll
-              </button>
-            </a>
-            <button className="px-8 md:px-16 py-1 bg-green-200 rounded text-blue-900">
-              Get Started
-            </button>
-          </div>
+        </div>
+        <div className="hidden md:flex justify-end items-center">
+              <img
+                src={images[currentIndex]}
+                alt="Changing"
+                className={`absolute bottom-0 right-0 transition-all duration-500  md:h-[460px] ${
+                  currentIndex === 2 ? 'max-w-[460px] md:max-w-[460px] right-0' : 'max-w-[320px] md:max-w-[320px] right-4 md:right-10'
+                }`}
+              />
         </div>
       </section>
 
@@ -388,7 +345,7 @@ export default function HomePage() {
               {courses.map((course, idx) => (
                 <div
                   key={idx}
-                  className="w-[260px] md:w-[380px] lg:w-[400px] h-[200px] snap-center bg-green-100 p-4 md:p-6 shadow text-center flex-shrink-0"
+                  className="w-[280px] md:w-[380px] lg:w-[400px] h-[200px] snap-center bg-green-100 p-4 md:p-6 shadow text-center flex-shrink-0"
                 >
                   <div className="flex flex-col items-center gap-1 mb-2">
                     {course.icon}
@@ -407,7 +364,8 @@ export default function HomePage() {
       </section>
 
       {/* About Section */}
-      <section className="bg-gray-100 py-12 px-2 md:px-20" id="about">
+      <section className="bg-white " id="about">
+        <div className="gap-6 bg-gray-100 py-12 px-4 md:px-20 rounded-lg shadow w-[95vw] md:w-[100vw]">
         <h2 className="text-center text-base font-bold text-blue-900 mb-10">Why Choose VDart Academy?</h2>
         <div className="space-y-12">
           {/* Feature Blocks */}
@@ -454,11 +412,11 @@ export default function HomePage() {
             </div>
           </div>
           <div className="flex flex-col md:flex-row gap-6 items-start">
-            <div className="flex flex-col items-center w-full md:w-40 pl-0 md:pl-4">
+            <div className="flex flex-col items-center w-full md:w-40 pl-0 md:pl-10">
               <img src="/icons/Buildings.png" alt="Industry Oriented Courses" className="w-16 h-16 md:w-22 md:h-22" />
               <h2 className="text-blue-900 font-semibold text-center mt-2 text-sm">Industry Oriented Courses</h2>
             </div>
-            <div className="flex-1 pl-0 md:pl-14 pt-2">
+            <div className="flex-1 pl-0 md:pl-20 pt-2">
               <p className="text-sm text-gray-700">
                 At VDart Academy, our curriculum is thoughtfully crafted to align with the evolving needs of the tech industry...
               </p>
@@ -467,6 +425,7 @@ export default function HomePage() {
               </p>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -558,21 +517,23 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-blue-900 text-white px-4 md:px-6 py-10">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-          <div className="space-y-4 pl-0 md:pl-10">
+          <div className="space-y-4 pl-0 md:pl-10 text-center md:text-left">
             <h3 className="text-sm font-semibold uppercase tracking-wide">Contact Us</h3>
             <p className="text-sm font-bold">VDart Academy</p>
             <a href="mailto:info@vdartacademy.com" className="text-sm text-blue-100 underline hover:text-white">
               info@vdartacademy.com
             </a>
-            <p className="text-sm flex items-start gap-2 text-blue-100">
-              <MapPin className="h-5 w-5 text-blue-100 mt-1" />
-              Vdart, 30, Chennai - Theni Hwy, Mannarpuram, Sangillyandapuram, Tiruchirappalli, Tamil Nadu 620020
+            <p className="text-sm flex items-center md:items-start gap-2 md:gap-3 text-blue-100">
+              <MapPin className="h-4 w-4 md:h-5 md:w-5 text-blue-100 flex-shrink-0" />
+              <span className="flex-grow">
+                Vdart, 30, Chennai - Theni Hwy, Mannarpuram, Sangillyandapuram, Tiruchirappalli, Tamil Nadu 620020
+              </span>
             </p>
           </div>
         </div>
         <div className="border-t border-blue-900 mt-8 pt-4 flex flex-col md:flex-row justify-between items-center text-xs text-blue-100 gap-4">
           <p className="text-center md:text-left pl-0 md:pl-10">
-            © VDart Academy 2025. All Rights Reserved. <span className="underline cursor-pointer">Disclaimer</span> | <span className="underline cursor-pointer">Privacy Policy</span>
+            &copy; VDart Academy 2025. All Rights Reserved. <span className="underline cursor-pointer">Disclaimer</span> | <span className="underline cursor-pointer">Privacy Policy</span>
           </p>
           <div className="flex flex-wrap justify-start gap-6 md:gap-14 pr-0 md:pr-4">
             <div className="flex items-center gap-1">
@@ -597,4 +558,3 @@ export default function HomePage() {
     </div>
   )
 }
-
