@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import logo from '/vdart-logo.png';
-import { UserCircleIcon } from '@heroicons/react/24/outline';
 import { Target, TrendingUp, Cloud,Brain, Palette, Menu, X, MapPin, MessageCircle, Laptop } from "lucide-react";
 import { FaFacebook, FaTwitter, FaLinkedin, FaInstagram } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import emailjs from '@emailjs/browser';
-import { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import { useState } from "react";
+gsap.registerPlugin(ScrollTrigger);
+
 const courses = [
   {
     icon: <Target className="h-5 w-5 text-blue-800" />,
@@ -67,77 +68,80 @@ const roles = [
   "AI & Machine Learning",
   "Cybersecurity",
 ];
+
 export default function HomePage() {
-    const scrollRef = useRef(null);
-    const sliderRef = useRef(null);
-    const scrollIntervalRef = useRef(null);
-    const [text, setText] = useState("");
-    const [roleIndex, setRoleIndex] = useState(0);
-    const [charIndex, setCharIndex] = useState(0);
-    const [isDeleting, setIsDeleting] = useState(false);
+  const sectionRef = useRef(null);
+  const horizontalRef = useRef(null);
+  const sliderRef = useRef(null);
+  const scrollIntervalRef = useRef(null);
 
-    const images = [
-      "/young-businesswoman-smiling-camera-removebg-preview 1.png",
-      "/young-businesswoman-smiling-camera-removebg-preview 1 (1).png",
-      "/young-businesswoman-smiling-camera-removebg-preview 1 (2).png",
-    ];
-  
-    const [currentIndex, setCurrentIndex] = useState(0);
-  
-    useEffect(() => {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      }, 3000); // Change every 3 seconds
-      return () => clearInterval(interval);
-    }, []);
+  // State variables
+  const [charIndex, setCharIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [current, setCurrent] = useState(0);
+  const [navOpen, setNavOpen] = useState(false);
 
-    const alumniData = [
-      {
-        name: "Rahul R",
-        course: "FullStack Development",
-        image: "/images/alumni1.png",
-        message:
-          "The Full Stack Development course at VDart Academy provided me with a comprehensive understanding of both front-end and back-end technologies. The curriculum was well-structured, and the hands-on projects allowed me to apply what I learned in real-world scenarios. The instructors were knowledgeable and supportive, making the learning experience both challenging and rewarding.",
-      },
-      {
-        name: "Priya",
-        course: "Data Analytics",
-        image: "/images/alumni2.png",
-        message:
-          "Enrolling in the Data Analytics course at VDart Academy was a pivotal decision in my career. The course covered essential topics like data visualization, statistical analysis, and predictive modeling. The practical assignments helped me build a strong portfolio, and the guidance from industry experts was invaluable in enhancing my analytical skills.",
-      },
-      {
-        name: "Arjun P",
-        course: "Cloud Computing",
-        image: "/images/alumni3.png",
-        message:
-          "The Cloud Computing course at VDart Academy equipped me with the skills to design and manage scalable cloud infrastructures. The curriculum was up-to-date with industry standards, and the hands-on labs provided practical experience with leading cloud platforms. This course has significantly boosted my confidence in pursuing cloud-related roles.",
-      },
-      {
-        name: "Nisha",
-        course: "UI/UX Design",
-        image: "/images/alumni4.png",
-        message:
-          "As someone passionate about design, the UI/UX Design course at VDart Academy exceeded my expectations. The course delved into user research, wireframing, and prototyping, providing a holistic view of the design process. The collaborative projects and constructive feedback from peers and instructors enriched my learning journey.",
-      },
-    ];
+  // Data
+  const images = [
+    "/young-businesswoman-smiling-camera-removebg-preview 1.png",
+    "/young-businesswoman-smiling-camera-removebg-preview 1 (1).png",
+    "/young-businesswoman-smiling-camera-removebg-preview 1 (2).png",
+  ];
 
-    const [current, setCurrent] = useState(0);
+  const alumniData = [
+    {
+      name: "Rahul R",
+      course: "FullStack Development",
+      image: "/images/alumni1.png",
+      message:
+        "The Full Stack Development course at VDart Academy provided me with a comprehensive understanding of both front-end and back-end technologies. The curriculum was well-structured, and the hands-on projects allowed me to apply what I learned in real-world scenarios. The instructors were knowledgeable and supportive, making the learning experience both challenging and rewarding.",
+    },
+    {
+      name: "Priya",
+      course: "Data Analytics",
+      image: "/images/alumni2.png",
+      message:
+        "Enrolling in the Data Analytics course at VDart Academy was a pivotal decision in my career. The course covered essential topics like data visualization, statistical analysis, and predictive modeling. The practical assignments helped me build a strong portfolio, and the guidance from industry experts was invaluable in enhancing my analytical skills.",
+    },
+    {
+      name: "Arjun P",
+      course: "Cloud Computing",
+      image: "/images/alumni3.png",
+      message:
+        "The Cloud Computing course at VDart Academy equipped me with the skills to design and manage scalable cloud infrastructures. The curriculum was up-to-date with industry standards, and the hands-on labs provided practical experience with leading cloud platforms. This course has significantly boosted my confidence in pursuing cloud-related roles.",
+    },
+    {
+      name: "Nisha",
+      course: "UI/UX Design",
+      image: "/images/alumni4.png",
+      message:
+        "As someone passionate about design, the UI/UX Design course at VDart Academy exceeded my expectations. The course delved into user research, wireframing, and prototyping, providing a holistic view of the design process. The collaborative projects and constructive feedback from peers and instructors enriched my learning journey.",
+    },
+  ];
+
+  const { name, course, image, message } = alumniData[current];
+  const formRef = useRef();
+
+  // Effects and Handlers
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % alumniData.length);
-    }, 5000); // change every 5s
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const { name, course, image, message } = alumniData[current];
-  
-  const formRef = useRef();
-
   const sendEmail = (e) => {
     e.preventDefault();
-  
     emailjs
       .sendForm(
         'service_ouzs018',
@@ -148,61 +152,33 @@ export default function HomePage() {
       .then(
         (result) => {
           alert("✅ Form submitted successfully!");
-          formRef.current.reset(); // clear form
+          formRef.current.reset();
         },
         (error) => {
           alert("❌ Failed to send form. Please try again.");
           console.error(error.text);
         }
       );
-
-      useEffect(() => {
-        const el = scrollRef.current;
-        if (!el) return;
-    
-        // Duplicate content to simulate loop
-        const clone = el.innerHTML;
-        el.innerHTML += clone;
-    
-        let scrollAmount = 0;
-        const speed = 0.5;
-    
-        const scrollLoop = () => {
-          scrollAmount += speed;
-          if (scrollAmount >= el.scrollWidth / 2) {
-            scrollAmount = 0; // reset
-          }
-          el.scrollLeft = scrollAmount;
-          requestAnimationFrame(scrollLoop);
-        };
-    
-        scrollLoop();
-      }, []);
   };
 
-  
   useEffect(() => {
     const currentRole = roles[roleIndex];
     const typingSpeed = isDeleting ? 50 : 100;
-    const pauseDuration = 2000; // Increased pause duration
+    const pauseDuration = 2000;
 
     const timeout = setTimeout(() => {
       if (!isDeleting) {
-        // Typing
         if (charIndex < currentRole.length) {
           setText(currentRole.substring(0, charIndex + 1));
           setCharIndex(charIndex + 1);
         } else {
-          // Pause before deleting
           setTimeout(() => setIsDeleting(true), pauseDuration);
         }
       } else {
-        // Deleting
         if (charIndex > 0) {
           setText(currentRole.substring(0, charIndex - 1));
           setCharIndex(charIndex - 1);
         } else {
-          // Move to next role
           setIsDeleting(false);
           setRoleIndex((prev) => (prev + 1) % roles.length);
         }
@@ -212,77 +188,37 @@ export default function HomePage() {
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, roleIndex]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      const slider = horizontalRef.current;
 
-    const [navOpen, setNavOpen] = useState(false);
+      if (!section || !slider) return;
 
-    useEffect(() => {
-      const handleScroll = () => {
-        if (sliderRef.current) {
-          sliderRef.current.scrollBy({
-            left: 1,
-            behavior: "smooth"
-          });
-        }
-      };
-    
-      const interval = setInterval(handleScroll, 10);
-      
-      return () => {
-        clearInterval(interval);
-      };
-    }, []);
+      const scrollTop = window.scrollY;
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const windowHeight = window.innerHeight;
 
-    useEffect(() => {
-      startAutoScroll();
-  
-      return () => stopAutoScroll(); // Clean up
-    }, []);
-  
-    const startAutoScroll = () => {
-      stopAutoScroll(); // Clear if already running
-      scrollIntervalRef.current = setInterval(() => {
-        if (sliderRef.current) {
-          sliderRef.current.scrollBy({ left: 1, behavior: "smooth" });
-        }
-      }, 10); // Smaller = faster
-    };
-  
-    const stopAutoScroll = () => {
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
+      const scrollDistance = scrollTop - sectionTop;
+      const maxScroll = sectionHeight - windowHeight;
+
+      if (scrollDistance > 0 && scrollDistance < maxScroll) {
+        // Calculate horizontal scroll amount
+        const horizontalScroll = (scrollDistance / maxScroll) * slider.scrollWidth;
+        
+        // Apply smooth scroll using GSAP
+        gsap.to(slider, {
+          x: -horizontalScroll,
+          duration: 0.3,
+          ease: "power2.inOut"
+        });
       }
     };
 
-// horizontal scroll
-const wrapperRef = useRef(null);
-const horizontalRef = useRef(null);
-
-// Add this useEffect hook in your component
-useEffect(() => {
-  const wrapper = wrapperRef.current;
-  const horizontal = horizontalRef.current;
-
-  const onScroll = () => {
-    const scrollTop = window.scrollY;
-    const offsetTop = wrapper.offsetTop;
-    const sectionHeight = wrapper.offsetHeight;
-    const endPoint = offsetTop + sectionHeight;
-
-    if (scrollTop >= offsetTop && scrollTop <= endPoint) {
-      // When in section
-      wrapper.style.height = `${sectionHeight}px`;
-      const horizontalScroll = scrollTop - offsetTop;
-      horizontal.style.transform = `translateX(-${horizontalScroll}px)`;
-    } else {
-      // When outside section
-      wrapper.style.height = 'auto';
-      horizontal.style.transform = 'translateX(0)';
-    }
-  };
-
-  window.addEventListener('scroll', onScroll);
-  return () => window.removeEventListener('scroll', onScroll);
-}, []);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-green-100 font-sans text-[#002244] w-full">
@@ -416,162 +352,50 @@ useEffect(() => {
       </section>
 
       {/* Courses Offered */}
-      {/* <section className="relative px-4 py-16 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden" id="courses">
-  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent opacity-30 pointer-events-none" />
-  <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-100/20 rounded-full blur-2xl animate-float" />
-  <div className="absolute -bottom-20 -right-20 w-50 h-50 bg-green-100/20 rounded-full blur-2xl animate-float-reverse" />
+      <section
+        ref={sectionRef}
+        className="relative h-[200vh] bg-gradient-to-br from-green-50 to-blue-50"
+        id="courses"
+      >
+        {/* Header stays at the top of this section */}
+        <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center z-10">
+          <h3 className="text-xl md:text-3xl font-bold text-blue-900 tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+              Explore
+            </span>{" "}
+            Our Courses
+          </h3>
+        </div>
 
-  <h3 className="text-center text-xl md:text-3xl font-bold text-blue-900 mb-12 z-10 relative tracking-tight">
-    <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Explore</span> Our Courses
-  </h3>
-
-  <div className="overflow-hidden relative z-10">
-  <div
-  ref={sliderRef}
-  onMouseEnter={stopAutoScroll}
-  onMouseLeave={startAutoScroll}
-  className="flex gap-4 px-3 pb-6 snap-x snap-mandatory overflow-x-auto scroll-smooth"
-
->
-      <style>{`::-webkit-scrollbar { display: none; }`}</style>
-
-      {[...courses, ...courses].map((course, idx) => (
-        <div
-          key={idx}
-          className="min-w-[300px] md:min-w-[360px] lg:min-w-[400px] h-auto group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl"
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-blue-900/5 to-blue-900/10 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl opacity-50 pointer-events-none" />
-          <div className="relative p-6">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg">
-              <div className="text-white text-2xl">{course.icon}</div>
+        {/* Sticky container */}
+        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+          <div
+            ref={horizontalRef}
+            className="flex transition-transform duration-300 ease-out will-change-transform pl-10 gap-8"
+          >
+          {[...courses, ...courses].map((course, idx) => (
+            <div
+              key={idx}
+              className="min-w-[320px] w-[400px] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+            >
+              <div className="flex items-center justify-center w-16 h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
+                {course.icon}
+              </div>
+              <h4 className="text-xl font-bold text-blue-900 mb-3 text-center">{course.title}</h4>
+              <ul className="space-y-2 text-sm text-gray-700">
+                {course.points.map((pt, i) => (
+                  <li key={i} className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h4 className="text-xl md:text-2xl font-bold text-blue-900 mb-3 group-hover:text-sky-600 transition-colors duration-300">
-              {course.title}
-            </h4>
-            <ul className="space-y-2 text-gray-700">
-              {course.points.map((pt, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                  <span className="text-sm">{pt}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          ))}
         </div>
-      ))}
-    </div>
-  </div>
+      </div>
+    </section>
 
-  <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl animate-pulse" />
-  <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-green-100/20 rounded-full blur-3xl animate-pulse-delay" />
-</section> */}
-<section
-  className="relative px-4 py-16 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden"
-  id="courses"
->
-  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent opacity-30 pointer-events-none" />
-  <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-100/20 rounded-full blur-2xl animate-float" />
-  <div className="absolute -bottom-20 -right-20 w-50 h-50 bg-green-100/20 rounded-full blur-2xl animate-float-reverse" />
-
-  <h3 className="text-center text-xl md:text-3xl font-bold text-blue-900 mb-12 z-10 relative tracking-tight">
-    <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">Explore</span> Our Courses
-  </h3>
-
-  <div className="overflow-hidden relative z-10">
-    <div
-      ref={sliderRef}
-      className="flex gap-4 px-3 pb-6 snap-x snap-mandatory overflow-x-auto scroll-smooth"
-      onWheel={(e) => {
-        const container = e.currentTarget;
-        if (e.deltaY !== 0) {
-          e.preventDefault();
-          container.scrollLeft += e.deltaY;
-        }
-      }}
-      style={{ scrollbarWidth: 'none' }}
-    >
-      <style>{`::-webkit-scrollbar { display: none; }`}</style>
-
-      {[...courses, ...courses].map((course, idx) => (
-        <div
-          key={idx}
-          className="min-w-[300px] md:min-w-[360px] lg:min-w-[400px] h-auto group relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl"
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-blue-900/5 to-blue-900/10 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl opacity-50 pointer-events-none" />
-          <div className="relative p-6">
-            <div className="flex items-center justify-center w-16 h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg">
-              <div className="text-white text-2xl">{course.icon}</div>
-            </div>
-            <h4 className="text-xl md:text-2xl font-bold text-blue-900 mb-3 group-hover:text-sky-600 transition-colors duration-300">
-              {course.title}
-            </h4>
-            <ul className="space-y-2 text-gray-700">
-              {course.points.map((pt, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                  <span className="text-sm">{pt}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-
-  <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/20 rounded-full blur-3xl animate-pulse" />
-  <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-green-100/20 rounded-full blur-3xl animate-pulse-delay" />
-</section>
-
-{/* Horizontal Scroll Section */}
-<section ref={wrapperRef} className="relative w-full bg-gradient-to-br from-green-50 to-blue-50 py-16 overflow-hidden">
-  {/* Decorative Elements */}
-  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-50/20 to-transparent opacity-30 pointer-events-none" />
-  <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-100/20 rounded-full blur-2xl" />
-  <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-green-100/20 rounded-full blur-2xl" />
-
-  {/* Section Header */}
-  <div className="container mx-auto px-4">
-    <h3 className="text-center text-3xl font-bold text-blue-900 mb-12">
-      <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-        Explore
-      </span>{" "}
-      Our Courses
-    </h3>
-  </div>
-
-  {/* Horizontal Scrolling Cards */}
-  <div className="relative">
-    <div
-      ref={horizontalRef}
-      className="flex gap-6 pb-8 px-4 transition-transform duration-200 ease-out"
-    >
-      {[...courses, ...courses].map((course, idx) => (
-        <div
-          key={idx}
-          className="min-w-[300px] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-        >
-          <div className="flex items-center justify-center w-14 h-14 mb-4 rounded-full bg-gradient-to-br from-blue-500 to-sky-500 text-white text-2xl shadow-lg">
-            {course.icon}
-          </div>
-          <h4 className="text-xl font-bold text-blue-900 mb-3">
-            {course.title}
-          </h4>
-          <ul className="text-gray-700 text-sm space-y-2">
-            {course.points.map((pt, i) => (
-              <li key={i} className="flex gap-2 items-start">
-                <span className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0" />
-                <span>{pt}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
 
 {/* 
 <section className="relative px-4 py-12 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden" id="courses">
@@ -924,7 +748,7 @@ useEffect(() => {
 </section>
 
       {/* Footer */}
-      <footer className="bg-gray-500 text-white px-4 md:px-6 py-6">
+      <footer className="bg-green-100 text-white px-4 md:px-6 py-6">
   <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
     {/* Left: Logo */}
     <div className="flex items-start md:pl-10">
