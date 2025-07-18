@@ -8,7 +8,30 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useState } from "react";
+import AnimatedNumber from "../components/AnimatedNumber";
+import AlumniSection from "../components/AlumniSection";
+
 gsap.registerPlugin(ScrollTrigger);
+
+import { motion } from "framer-motion";
+
+const features = [
+  {
+    title: "Innovative Approach",
+    description:
+      "We harness modern tech stacks and design systems to solve real-world problems in intuitive ways.",
+  },
+  {
+    title: "Human-Centric Design",
+    description:
+      "Every product we build is crafted to be meaningful, accessible, and delightful to use.",
+  },
+  {
+    title: "Scalable Architecture",
+    description:
+      "From startups to enterprises, our solutions scale with your needs and goals.",
+  },
+];
 
 const courses = [
   {
@@ -353,8 +376,8 @@ export default function HomePage() {
   id="courses"
 >
   {/* Sticky container that locks when section enters */}
-  <div className="sticky top-0 h-screen flex flex-col justify-center items-start overflow-hidden">
-    <h3 className="text-3xl md:text-4xl font-bold text-blue-800 mb-6 md:mb-10 text-center mx-auto w-fit pb-6 md:pb-10 px-4">
+  <div className="sticky top-2 h-screen flex flex-col justify-center items-start overflow-hidden">
+    <h3 className="text-3xl md:text-3xl font-bold text-blue-800 mb-6 md:mb-10 text-center mx-auto w-fit pb-6 md:pb-10 px-4">
       <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
         Explore
       </span>{" "}
@@ -369,12 +392,12 @@ export default function HomePage() {
       {courses.map((course, idx) => (
         <div
           key={idx}
-          className="min-w-[280px] sm:min-w-[320px] md:min-w-[380px] w-[80vw] md:w-[47vw] h-[auto] md:h-[50vh] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+          className="min-w-[280px] sm:min-w-[320px] md:min-w-[380px] w-[80vw] md:w-[47vw] lg:h-[25vw] md:h-[50vh] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
         >
           <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
             {course.icon}
           </div>
-          <h4 className="text-lg md:text-xl font-bold text-blue-900 mb-3 pb-2 text-center">
+          <h4 className="text-lg md:text-xl font-bold text-blue-900 mb-3 pb-6  text-center">
             {course.title}
           </h4>
           <ul className="space-y-2 text-sm text-gray-700 pl-4 md:pl-8">
@@ -391,6 +414,56 @@ export default function HomePage() {
   </div>
 </section>
 
+<section className="bg-gradient-to-br from-white to-blue-50 py-16 px-4 md:px-20">
+      <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12">
+        {/* Left - Text Content */}
+        <motion.div
+          className="w-full md:w-1/2"
+          initial={{ x: -80, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-6">
+            About <span className="text-blue-600">Us</span>
+          </h2>
+          <p className="text-lg text-gray-700 mb-8">
+            We're a passionate team focused on blending technology, design, and innovation to create seamless digital experiences. Our goal is to deliver products that people love to use and rely on daily.
+          </p>
+
+          <div className="space-y-6">
+            {features.map((item, i) => (
+              <motion.div
+                key={i}
+                className="p-4 border-l-4 border-blue-500 bg-white shadow-md rounded-lg hover:scale-[1.02] transition-all duration-300"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * i, duration: 0.6 }}
+                viewport={{ once: true }}
+              >
+                <h4 className="font-semibold text-lg text-blue-700 mb-1">{item.title}</h4>
+                <p className="text-gray-600">{item.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Right - Image */}
+        <motion.div
+          className="w-full md:w-1/2 bg-white"
+          initial={{ x: 80, opacity: 0 }}
+          whileInView={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          <img
+            src="/about-us (1).png"
+            alt="Team working illustration"
+            className="w-full max-h-[450px] object-contain rounded-xl shadow-lg"
+          />
+        </motion.div>
+      </div>
+    </section>
 
 {/* 
 <section className="relative px-4 py-12 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden" id="courses">
@@ -448,7 +521,7 @@ export default function HomePage() {
       {/* About Section */}
       <section className="relative bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 md:px-20" id="about">
   <div className="max-w-screen-xl mx-auto">
-    <h2 className="text-center text-2xl md:text-3xl font-bold text-blue-900 mb-12">
+    <h2 className="text-center text-2xl md:text-3xl font-bold text-blue-900 mb-12 py-4">
       Why Choose <span className="text-sky-600">VDart Academy?</span>
     </h2>
 
@@ -560,11 +633,44 @@ export default function HomePage() {
     </div>
   </div>
 </section> */}
+<section className="py-16 px-6 md:px-28 bg-white">
+  <div className="grid md:grid-cols-2 gap-12 items-center">
+    {/* Text Content */}
+    <div>
+      <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+        Automate Daily <br />
+        <span className="relative inline-block">
+          <span className="bg-indigo-100 absolute inset-0 -skew-y-1 z-[-1]" />
+          Operations
+        </span>
+      </h2>
+      <p className="text-gray-600 text-lg mb-8">
+        We make it easy to focus on things that matter.
+      </p>
+
+      <div className="border-l-4 border-blue-900 pl-4">
+        <p className="text-gray-700 font-semibold">Trusted By</p>
+        <AnimatedNumber targetNumber={1100} />
+        <p className="text-gray-600">Educators</p>
+      </div>
+    </div>
+
+    {/* Image */}
+    <div className="w-full flex justify-center">
+      <img
+        src="/feature.png"
+        alt="Automate Daily Operations Illustration"
+        className="max-w-full h-auto"
+      />
+    </div>
+  </div>
+</section>
+
 
     
       {/* Alumni Section */}
-      <section className="bg-[#fdfdfb] py-8 px-2 md:px-4">
-        <h3 className="text-center text-sm font-bold text-blue-900 mb-8">
+      {/* <section className="bg-[#fdfdfb] pt-16 px-2 md:px-4">
+        <h3 className="text-center text-3xl font-bold text-blue-900 mb-8 pb-4">
           Hear From Our Alumni
         </h3>
         <div className="max-w-5xl h-auto md:h-[180px] mx-auto bg-gray-100 rounded shadow-md flex flex-col md:flex-row items-center overflow-hidden">
@@ -591,8 +697,8 @@ export default function HomePage() {
             ></span>
           ))}
         </div>
-      </section>
-
+      </section> */}
+      <AlumniSection />
       {/* Contact Section */}
       {/* <section className="bg-gray-100 py-10 px-4" id="contact">
   <h2 className="text-center text-xl font-bold text-blue-900 mb-10">Contact Us</h2>
@@ -669,7 +775,7 @@ export default function HomePage() {
   {/* Decorative Glows */}
   
   <div className="relative z-10 max-w-7xl mx-auto">
-    <h2 className="text-center text-3xl md:text-4xl font-extrabold text-blue-900 mb-12 tracking-tight">
+    <h2 className="text-center text-3xl md:text-3xl font-bold text-blue-900 mb-12 tracking-tight">
       Get in <span className="bg-blue-900 bg-clip-text text-transparent">Touch</span>
     </h2>
 
