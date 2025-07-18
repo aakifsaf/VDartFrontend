@@ -71,9 +71,7 @@ const roles = [
 
 export default function HomePage() {
   const sectionRef = useRef(null);
-  const horizontalRef = useRef(null);
-  const sliderRef = useRef(null);
-  const scrollIntervalRef = useRef(null);
+
 
   // State variables
   const [charIndex, setCharIndex] = useState(0);
@@ -188,36 +186,33 @@ export default function HomePage() {
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, roleIndex]);
 
+  const innerRef = useRef(null);
+
   useEffect(() => {
+    const section = sectionRef.current;
+    const inner = innerRef.current;
+    if (!section || !inner) return;
+
     const handleScroll = () => {
-      const section = sectionRef.current;
-      const slider = horizontalRef.current;
-
-      if (!section || !slider) return;
-
-      const scrollTop = window.scrollY;
       const sectionTop = section.offsetTop;
+      const scrollY = window.scrollY;
       const sectionHeight = section.offsetHeight;
       const windowHeight = window.innerHeight;
 
-      const scrollDistance = scrollTop - sectionTop;
-      const maxScroll = sectionHeight - windowHeight;
+      const scrollInSection = Math.min(
+        Math.max(scrollY - sectionTop, 0),
+        sectionHeight - windowHeight
+      );
 
-      if (scrollDistance > 0 && scrollDistance < maxScroll) {
-        // Calculate horizontal scroll amount
-        const horizontalScroll = (scrollDistance / maxScroll) * slider.scrollWidth;
-        
-        // Apply smooth scroll using GSAP
-        gsap.to(slider, {
-          x: -horizontalScroll,
-          duration: 0.3,
-          ease: "power2.inOut"
-        });
-      }
+      const maxScroll = inner.scrollWidth - window.innerWidth;
+      const scrollProgress = scrollInSection / (sectionHeight - windowHeight);
+      const translateX = -scrollProgress * maxScroll;
+
+      inner.style.transform = `translateX(${translateX}px)`;
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -353,48 +348,48 @@ export default function HomePage() {
 
       {/* Courses Offered */}
       <section
-        ref={sectionRef}
-        className="relative h-[200vh] bg-gradient-to-br from-green-50 to-blue-50"
-        id="courses"
-      >
-        {/* Header stays at the top of this section */}
-        <div className="absolute top-10 left-1/2 transform -translate-x-1/2 text-center z-10">
-          <h3 className="text-xl md:text-3xl font-bold text-blue-900 tracking-tight">
-            <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-              Explore
-            </span>{" "}
-            Our Courses
-          </h3>
-        </div>
+  ref={sectionRef}
+  className="relative h-[200vh] bg-gradient-to-br from-green-50 to-blue-50 z-10"
+  id="courses"
+>
+  {/* Sticky container that locks when section enters */}
+  <div className="sticky top-0 h-screen flex flex-col justify-center items-start overflow-hidden">
+    <h3 className="text-3xl md:text-4xl font-bold text-blue-800 mb-6 md:mb-10 text-center mx-auto w-fit pb-6 md:pb-10 px-4">
+      <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+        Explore
+      </span>{" "}
+      Our Courses
+    </h3>
 
-        {/* Sticky container */}
-        <div className="sticky top-0 h-screen flex items-center overflow-hidden">
-          <div
-            ref={horizontalRef}
-            className="flex transition-transform duration-300 ease-out will-change-transform pl-10 gap-8"
-          >
-          {[...courses, ...courses].map((course, idx) => (
-            <div
-              key={idx}
-              className="min-w-[320px] w-[400px] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
-            >
-              <div className="flex items-center justify-center w-16 h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
-                {course.icon}
-              </div>
-              <h4 className="text-xl font-bold text-blue-900 mb-3 text-center">{course.title}</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                {course.points.map((pt, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                    <span>{pt}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+    {/* Horizontal scroll track */}
+    <div
+      ref={innerRef}
+      className="flex gap-6 md:gap-8 transition-transform duration-300 ease-out will-change-transform px-4 md:px-10"
+    >
+      {courses.map((course, idx) => (
+        <div
+          key={idx}
+          className="min-w-[280px] sm:min-w-[320px] md:min-w-[380px] w-[80vw] md:w-[47vw] h-[auto] md:h-[50vh] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+        >
+          <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
+            {course.icon}
+          </div>
+          <h4 className="text-lg md:text-xl font-bold text-blue-900 mb-3 pb-2 text-center">
+            {course.title}
+          </h4>
+          <ul className="space-y-2 text-sm text-gray-700 pl-4 md:pl-8">
+            {course.points.map((pt, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span>{pt}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div>
-    </section>
+      ))}
+    </div>
+  </div>
+</section>
 
 
 {/* 
@@ -761,12 +756,12 @@ export default function HomePage() {
 
     {/* Right: Company Info */}
     <div className="space-y-2 text-center md:text-left">
-      <h3 className="text-sm font-semibold uppercase tracking-wide">Contact Us</h3>
-      <p className="text-sm font-bold">VDart Academy</p>
-      <a href="mailto:info@vdartacademy.com" className="text-sm text-blue-100 underline hover:text-white">
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-blue-900">Contact Us</h3>
+      <p className="text-sm font-bold text-blue-900">VDart Academy</p>
+      <a href="mailto:info@vdartacademy.com" className="text-sm text-blue-900 underline hover:text-blue-600">
         info@vdartacademy.com
       </a>
-      <p className="text-sm text-blue-100">
+      <p className="text-sm text-blue-900">
         Vdart, 30, Chennai - Theni Hwy, Mannarpuram, Sangillyandapuram,<br />
         Tiruchirappalli, Tamil Nadu 620020
       </p>
@@ -775,13 +770,13 @@ export default function HomePage() {
 
   {/* Bottom Row */}
   <div className="border-t border-gray-600 mt-6 pt-4 flex flex-col md:flex-row justify-between items-center text-xs text-blue-100 gap-4">
-    <p className="text-center md:text-left">
+    <p className="text-center md:text-left text-blue-900">
       &copy; VDart Academy 2025. All Rights Reserved.
       <span className="underline cursor-pointer ml-1">Disclaimer</span> |
       <span className="underline cursor-pointer ml-1">Privacy Policy</span>
     </p>
 
-    <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-10">
+    <div className="flex flex-wrap justify-center md:justify-start gap-4 md:gap-10 text-blue-900">
       <div className="flex items-center gap-1">
         <FaFacebook className="w-4 h-4" />
         <span>VDart Academy</span>
