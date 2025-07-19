@@ -10,10 +10,12 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { useState } from "react";
 import AnimatedNumber from "../components/AnimatedNumber";
 import AlumniSection from "../components/AlumniSection";
+import { motion } from "framer-motion";
+import CoursesSection from "../components/CoursesSection";
+
 
 gsap.registerPlugin(ScrollTrigger);
 
-import { motion } from "framer-motion";
 
 const features = [
   {
@@ -93,7 +95,6 @@ const roles = [
 ];
 
 export default function HomePage() {
-  const sectionRef = useRef(null);
 
 
   // State variables
@@ -209,7 +210,6 @@ export default function HomePage() {
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, roleIndex]);
 
-  const innerRef = useRef(null);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -233,6 +233,37 @@ export default function HomePage() {
 
       inner.style.transform = `translateX(${translateX}px)`;
     };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const sectionRef = useRef(null);
+  const innerRef = useRef(null);
+  const [scrollX, setScrollX] = useState(0);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const offsetTop = sectionRef.current.offsetTop;
+      const sectionHeight = sectionRef.current.offsetHeight;
+
+      if (
+        scrollTop >= offsetTop &&
+        scrollTop <= offsetTop + sectionHeight
+      ) {
+        const relativeScroll = scrollTop - offsetTop;
+        const scrollPercentage = relativeScroll / sectionHeight;
+
+        const maxScroll = innerRef.current.scrollWidth - innerRef.current.clientWidth;
+        const newScrollX = maxScroll * scrollPercentage;
+
+        setScrollX(newScrollX);
+      }
+    };
+
+    setContainerWidth(innerRef.current.scrollWidth - innerRef.current.clientWidth);
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -369,52 +400,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Courses Offered */}
-      <section
-  ref={sectionRef}
-  className="relative h-[200vh] bg-gradient-to-br from-green-50 to-blue-50 z-10"
-  id="courses"
->
-  {/* Sticky container that locks when section enters */}
-  <div className="sticky top-2 h-screen flex flex-col justify-center items-start overflow-hidden">
-    <h3 className="text-3xl md:text-3xl font-bold text-blue-800 mb-6 md:mb-10 text-center mx-auto w-fit pb-6 md:pb-10 px-4">
-      <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
-        Explore
-      </span>{" "}
-      Our Courses
-    </h3>
-
-    {/* Horizontal scroll track */}
-    <div
-      ref={innerRef}
-      className="flex gap-6 md:gap-8 transition-transform duration-300 ease-out will-change-transform px-4 md:px-10"
-    >
-      {courses.map((course, idx) => (
-        <div
-          key={idx}
-          className="min-w-[280px] sm:min-w-[320px] md:min-w-[380px] w-[80vw] md:w-[47vw] lg:h-[25vw] md:h-[50vh] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
-        >
-          <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
-            {course.icon}
-          </div>
-          <h4 className="text-lg md:text-xl font-bold text-blue-900 mb-3 pb-6  text-center">
-            {course.title}
-          </h4>
-          <ul className="space-y-2 text-sm text-gray-700 pl-4 md:pl-8">
-            {course.points.map((pt, i) => (
-              <li key={i} className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span>{pt}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-<section className="bg-gradient-to-br from-white to-blue-50 py-16 px-4 md:px-20">
+{/* About Us */}
+      <section className="bg-gradient-to-br from-white to-blue-50 py-16 px-4 md:px-20" id="about">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center gap-12">
         {/* Left - Text Content */}
         <motion.div
@@ -464,6 +451,51 @@ export default function HomePage() {
         </motion.div>
       </div>
     </section>
+
+      {/* Courses Offered */}
+      {/* <section
+  ref={sectionRef}
+  className="relative h-[200vh] bg-gradient-to-br from-green-50 to-blue-50 z-10"
+  id="courses"
+>
+  <div className="sticky top-2 h-screen flex flex-col justify-center items-start overflow-hidden">
+    <h3 className="text-3xl md:text-3xl font-bold text-blue-800 mb-6 md:mb-10 text-center mx-auto w-fit pb-6 md:pb-10 px-4">
+      <span className="bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+        Explore
+      </span>{" "}
+      Our Courses
+    </h3>
+
+    <div
+      ref={innerRef}
+      className="flex gap-6 md:gap-8 transition-transform duration-300 ease-out will-change-transform px-4 md:px-[25vw]"
+    >
+      {courses.map((course, idx) => (
+        <div
+          key={idx}
+          className="min-w-[280px] sm:min-w-[320px] md:min-w-[380px] w-[80vw] md:w-[47vw] lg:h-[25vw] md:h-[50vh] bg-white rounded-2xl shadow-lg p-6 flex-shrink-0 hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+        >
+          <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 mb-4 mx-auto rounded-full bg-gradient-to-br from-blue-500 to-sky-500 shadow-lg text-white text-2xl">
+            {course.icon}
+          </div>
+          <h4 className="text-lg md:text-xl font-bold text-blue-900 mb-3 pb-6  text-center">
+            {course.title}
+          </h4>
+          <ul className="space-y-2 text-sm text-gray-700 pl-4 md:pl-8">
+            {course.points.map((pt, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span>{pt}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section> */}
+
+<CoursesSection />
 
 {/* 
 <section className="relative px-4 py-12 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden" id="courses">
@@ -519,7 +551,7 @@ export default function HomePage() {
 </section> */}
 
       {/* About Section */}
-      <section className="relative bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 md:px-20" id="about">
+      <section className="relative bg-gradient-to-br from-green-50 to-blue-50 py-12 px-4 md:px-20">
   <div className="max-w-screen-xl mx-auto">
     <h2 className="text-center text-2xl md:text-3xl font-bold text-blue-900 mb-12 py-4">
       Why Choose <span className="text-sky-600">VDart Academy?</span>
